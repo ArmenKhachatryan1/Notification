@@ -1,0 +1,32 @@
+version: '3'
+services:
+    nginx:
+        image: nginx:latest
+        volumes:
+            - ./:/var/www
+            - ./nginx/conf.d:/etc/nginx/conf.d
+        ports:
+            - "8080:80"
+        container_name: php-nginx
+        depends_on:
+            - php-fpm
+
+    php-fpm:
+        build:
+            context: .
+            dockerfile: Dockerfile
+        volumes:
+            - ./:/var/www
+        container_name: php-fpm
+        depends_on:
+            - php-mysql
+
+    php-mysql:
+        image: mysql:8.0
+        restart: always
+        environment:
+            MYSQL_ROOT_PASSWORD: 12345
+            MYSQL_DATABASE: notification
+        ports:
+            - "3360:3306"
+        container_name: php-mysql
